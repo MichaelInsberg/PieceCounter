@@ -1,0 +1,16 @@
+<Project>
+
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>$(SolutionDir)\.sonarlint\IMIcsharp.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="$(SolutionDir)\.sonarlint\IMI\CSharp\SonarLint.xml" Link="SonarLint.xml" />
+    <AdditionalFiles Include="$(SolutionDir)\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <RunSettingsFilePath>$(SolutionDir)\IMI.runsettings</RunSettingsFilePath>
+  </PropertyGroup>
+ 
+</Project>
