@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <AdditionalFiles Include="$(SolutionDir)\.sonarlint\IMI\CSharp\SonarLint.xml" Link="SonarLint.xml" />
-    <AdditionalFiles Include="$(SolutionDir)\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
 
   <PropertyGroup>

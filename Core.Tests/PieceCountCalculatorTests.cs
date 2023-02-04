@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -11,14 +12,14 @@ namespace PieceCounter.Core.Tests;
 [TestFixture]
 public sealed class PieceCountCalculatorTests
 {
-    private Mock<IPieceCounterSource> pieceCounterSourceMock;
-    private PieceCountCalculator objectToTest;
+    private Mock<IPieceCounterSource> _pieceCounterSourceMock;
+    private PieceCountCalculator _objectToTest;
 
     [SetUp]
     public void Setup()
     {
-        pieceCounterSourceMock = new Mock<IPieceCounterSource>();
-        objectToTest = new PieceCountCalculator(pieceCounterSourceMock.Object);
+        _pieceCounterSourceMock = new Mock<IPieceCounterSource>();
+        _objectToTest = new PieceCountCalculator(_pieceCounterSourceMock.Object);
     }
 
     [Test]
@@ -35,8 +36,8 @@ public sealed class PieceCountCalculatorTests
     public void CreatePieceCountCalculator_WithPieceCounterSourceReturnsNull_ShouldThrow()
     {
         //Arrange
-        _ = pieceCounterSourceMock.Setup(p => p.GetProducedPieces()).Returns((IEnumerable<int>)null);
-        var func = () => _ = objectToTest.CalculatePieceCount();
+        _ = _pieceCounterSourceMock.Setup(p => p.GetProducedPieces()).Returns((IEnumerable<int>)null);
+        var func = () => _ = _objectToTest.CalculatePieceCount();
 
         //Act & Assert
         _ = func.Should().Throw<InvalidOperationException>();
@@ -46,23 +47,39 @@ public sealed class PieceCountCalculatorTests
     public void CreatePieceCountCalculator_WithValidInput_ReturnsValidValues(IEnumerable<int> pieces, int expectedResult)
     {
         //Arrange
-        _ = pieceCounterSourceMock.Setup(p => p.GetProducedPieces()).Returns(pieces);
+        _ = _pieceCounterSourceMock.Setup(p => p.GetProducedPieces()).Returns(pieces);
+        
         //Act
-        var result = objectToTest.CalculatePieceCount();
+        var result = _objectToTest.CalculatePieceCount();
 
         //Act & Assert
         _ = result.Should().Be(expectedResult);
     }
 
+    [TestCaseSource(nameof(TestData))]
+    public async Task TaskCreatePieceCountCalculator_WithValidInput_ReturnsValidValuesAsync(IEnumerable<int> pieces, int expectedResult)
+    {
+        //Arrange
+        _ = _pieceCounterSourceMock.Setup(p => p.GetProducedPieces()).Returns(pieces);
+
+        //Act
+        var result = await _objectToTest.CalculatePieceCountAsync().ConfigureAwait(false);
+
+        //Act & Assert
+        _ = result.Should().Be(expectedResult);
+    }
+
+
     private static IEnumerable<TestCaseData> TestData()
     {
-        yield return new TestCaseData(new List<int>(), 0).SetName("Empty list");
-        yield return new TestCaseData(new List<int> { 100 }, 100).SetName("List with only on value");
-        yield return new TestCaseData(new List<int> { 10, 100 }, 100).SetName("List with 2 values");
-        yield return new TestCaseData(new List<int> { 0, 10, 100 }, 100).SetName("List with 3 values start with zero");
-        yield return new TestCaseData(new List<int> { 0, 10, 0 }, 10).SetName("List with 3 values start and ends with zero");
-        yield return new TestCaseData(new List<int> { 0, 10, 0, 20 }, 30).SetName("List with 3 values start and ends with zero");
-        yield return new TestCaseData(new List<int> { 0, 10, 20, 30, 0, 10, 20 }, 50).SetName("List with 3 values start and ends with zero");
-        yield return new TestCaseData(new List<int> { 0, 10, 20, 30, 0, 10, 20, 0, 100 }, 150).SetName("List with 3 values start and ends with zero");
+        yield return new TestCaseData(new List<int>(), 0).SetName("Test 1");
+        yield return new TestCaseData(new List<int> { 100 }, 100).SetName("Test 2");
+        yield return new TestCaseData(new List<int> { 10, 100 }, 100).SetName("Test 3");
+        yield return new TestCaseData(new List<int> { 0, 10, 100 }, 100).SetName("Test 4");
+        yield return new TestCaseData(new List<int> { 0, 10, 0 }, 10).SetName("Test 5");
+        yield return new TestCaseData(new List<int> { 0, 10, 0, 20 }, 30).SetName("Test 6");
+        yield return new TestCaseData(new List<int> { 0, 10, 20, 30, 0, 10, 20 }, 50).SetName("Test 7");
+        yield return new TestCaseData(new List<int> { 0, 10, 20, 30, 0, 10, 20, 0, 100 }, 150).SetName("Test 8");
+        yield return new TestCaseData(new List<int> { 100, 0, 10, 20, 30, 0, 10, 20, 0, 100 }, 250).SetName("Test 9");
     }
 }
