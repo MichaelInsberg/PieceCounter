@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PieceCounter.Core.Contracts;
 
-namespace PieceCounter.Core.Contracts;
+namespace PieceCounter.Core;
 
 /// <summary>
 /// The PieceCountCalculator class
@@ -32,7 +33,7 @@ public sealed class PieceCountCalculator
             throw new InvalidOperationException("The piece counter source returned null");
         }
 
-        var pieceList = pieces.ToList();
+        var pieceList = Enumerable.ToList<int>(pieces);
 
         switch (pieceList.Count)
         {
